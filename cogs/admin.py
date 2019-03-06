@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import permissions
 
-class AdminModule(commands.cog):
+class AdminModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

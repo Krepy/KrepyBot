@@ -4,7 +4,7 @@ import random
 import requests
 from lxml import html
 
-class MmangaModule(commands.cog):
+class MmangaModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

@@ -5,7 +5,7 @@ import requests
 from lxml import html
 
 
-class MeguModule(commands.cog):
+class MeguModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

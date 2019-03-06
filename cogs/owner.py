@@ -2,7 +2,7 @@ from discord.ext import commands
 import json
 
 
-class OwnerModule(commands.cog):
+class OwnerModule(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot

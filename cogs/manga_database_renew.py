@@ -5,7 +5,7 @@ import random
 import requests
 from lxml import html
 
-class MangaDatabaseRenewModule(commands.cog):
+class MangaDatabaseRenewModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

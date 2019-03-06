@@ -1,7 +1,7 @@
 import discord, datetime, pytz
 from discord.ext import commands
 
-class MembersModule(commands.cog):
+class MembersModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
