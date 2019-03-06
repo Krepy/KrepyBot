@@ -34,7 +34,7 @@ class AdminModule(commands.cog):
             await ctx.channel.send("You dont have permissions to ban a member.")
 
 
-    @commands.command(name="kick", aliases=["tekmele"])
+    @commands.command(name="kick")
     async def kick(self, ctx, member:discord.Member = None, *,reason = None):
         if ctx.message.author.guild_permissions.kick_members:
             if member == None and name != None:
