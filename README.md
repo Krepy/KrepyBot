@@ -7,7 +7,7 @@ This is a bot i code to learn how to do things and this is my first project on G
 `{"token": "[Your Token Here]", "prefix": "[Prefix Here]"}`</p>
 
 <p>You'll be needing following libraries:<br />
-    discord.py v1<br /> 
-    lxml<br />
-    requests<br />
-    sqlite3</p>
+    •discord.py v1<br />
+    •lxml<br />
+    •requests<br />
+    •sqlite3</p>
