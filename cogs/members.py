@@ -74,7 +74,7 @@ class MembersModule(commands.Cog):
             member = ctx.message.author
         name = f"{member.name}#{member.discriminator}"
 
-        imageURL = member.avatar_url
+        imageURL = str(member.avatar_url)
         imageURL = imageURL[:-15]
         imageURL = imageURL + ".jpg"
 
