@@ -26,7 +26,7 @@ class MeguModule(commands.Cog):
         title = page.xpath('//post/@file_url')
 
 
-        imgUrl = "http:" + random.choice(title)
+        imgUrl = random.choice(title)
         embed = discord.Embed(title="Megu", description="Explosion magic is the best magic!!", url=imgUrl, colour=0xE65858)
         embed.set_image(url=imgUrl)
 
