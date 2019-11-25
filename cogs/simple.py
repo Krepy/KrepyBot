@@ -8,7 +8,7 @@ class SimpleModule(commands.Cog):
     #!ping
     @commands.command(name="ping")
     async def ping(self, ctx):
-        ping_ = bot.latency
+        ping_ = self.bot.latency
         ping = round(ping_ * 1000)
         await ctx.channel.send(f"My ping is {ping} ms.")
 

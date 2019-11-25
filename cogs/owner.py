@@ -20,7 +20,7 @@ class OwnerModule(commands.Cog):
 
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
-    async def cog_load(self, ctx, *, cog: str):
+    async def load(self, ctx, *, cog: str):
 
         try:
             self.bot.load_extension(cog)
@@ -31,7 +31,7 @@ class OwnerModule(commands.Cog):
 
     @commands.command(name='unload', hidden=True)
     @commands.is_owner()
-    async def cog_unload(self, ctx, *, cog: str):
+    async def unload(self, ctx, *, cog: str):
 
         try:
             self.bot.unload_extension(cog)
@@ -42,7 +42,7 @@ class OwnerModule(commands.Cog):
 
     @commands.command(name='reload', hidden=True)
     @commands.is_owner()
-    async def cog_reload(self, ctx, *, cog: str):
+    async def reload(self, ctx, *, cog: str):
 
         try:
             self.bot.unload_extension(cog)
