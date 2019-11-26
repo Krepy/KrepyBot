@@ -13,6 +13,7 @@ async def _prefix(bot, message):
 
 
 extensions = [
+    "cogs.image",
     "cogs.admin",
     "cogs.channels",
     "cogs.error_handler",
