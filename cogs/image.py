@@ -4,7 +4,7 @@ import random
 import requests
 from lxml import html
 import lxml
-
+import os
 
 class ImageModule(commands.Cog):
     def __init__(self, bot):
@@ -13,7 +13,7 @@ class ImageModule(commands.Cog):
 
     @commands.guild_only()
     @commands.cooldown(2, 5, commands.BucketType.user)
-    @commands.command(name='birb', aliases=['bird'])
+    @commands.command(name='birb')
     async def birb(self, ctx):
 
         checkSource = requests.get("https://some-random-api.ml/img/birb")
@@ -30,7 +30,20 @@ class ImageModule(commands.Cog):
 
         await ctx.channel.send(embed=embed)
 
+    @commands.guild_only()
+    @commands.cooldown(2, 5, commands.BucketType.user)
+    @commands.command(name='bird')
+    async def bird(self, ctx):
 
+        randomFile=random.choice(os.listdir("Bird/"))
+
+        fp = open("Bird/"+randomFile, "rb")
+        f = discord.File(fp, filename=randomFile)
+
+        e = discord.Embed(title="Bird")
+        e.set_image(url="attachment://" + randomFile)
+
+        await ctx.channel.send(file=f, embed=e)
 
 def setup(bot):
     bot.add_cog(ImageModule(bot))
