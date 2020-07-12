@@ -1,7 +1,10 @@
 
 *.json
 *.sqlite
+*.sqlite-journal
+
 
 Bird
 __pycache__
 config.py
+databaseRenew.py

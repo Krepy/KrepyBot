@@ -1,0 +1,7 @@
+git+https://github.com/Rapptz/discord.py
+lxml==4.3.0
+async-timeout==3.0.1
+PyNaCl==1.2.1
+dnspython
+requests
+pytz

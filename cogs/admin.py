@@ -6,7 +6,7 @@ class AdminModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
+    @commands.guild_only()
     @commands.command(name="ban")
     async def ban(self, ctx, member:discord.Member = None, *, reason = None):
         if ctx.message.author.guild_permissions.ban_members:
@@ -33,7 +33,7 @@ class AdminModule(commands.Cog):
         else:
             await ctx.channel.send("You dont have permissions to ban a member.")
 
-
+    @commands.guild_only()
     @commands.command(name="kick")
     async def kick(self, ctx, member:discord.Member = None, *,reason = None):
         if ctx.message.author.guild_permissions.kick_members:

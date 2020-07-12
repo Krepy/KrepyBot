@@ -1,9 +1,12 @@
 import discord
 from discord.ext import commands
 import sqlite3
+import os
 import random
 import requests
 from lxml import html
+from databaseRenew import mdatabaseRenew
+
 
 class MangaDatabaseRenewModule(commands.Cog):
     def __init__(self, bot):
@@ -12,6 +15,9 @@ class MangaDatabaseRenewModule(commands.Cog):
     @commands.is_owner()
     @commands.command(name='mdatabaserenew', aliases=['dbrenew'])
     async def mangaDatabaseRenew(self, ctx):
+
+        # await mdatabaseRenew()
+        # await ctx.channel.send("Database renewing is done.\n")
         sqlite_file = 'manga_db.sqlite'
         tn = 'manga'
         cn1 = 'name'
@@ -70,7 +76,10 @@ class MangaDatabaseRenewModule(commands.Cog):
 
                 diger=random.choice(pageS.xpath("//td[./b/text()='Diğer Adları:']/text()"))
                 cikis=random.choice(pageS.xpath("//td[./b/text()='Çıkış Yılı:']/text()"))
-                konu=random.choice(pageS.xpath("//meta[@property='og:description']/@content"))
+                try:
+                    konu=random.choice(pageS.xpath("//meta[@property='og:description']/@content"))
+                except:
+                    konu = " "
 
                 latestL=pageS.xpath("(//a[@class='mangaep-episode'])[1]/@href")
 
