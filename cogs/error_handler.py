@@ -60,6 +60,10 @@ class CommandErrorHandler(commands.Cog):
 
             return await ctx.channel.send(f"I am missing permissions:\n```{missings}```")
 
+        elif isinstance(error, commands.CommandOnCooldown):
+            timeLeft = error.retry_after
+
+            return await ctx.channel.send(f"Command is on cooldown. Try again in {round(timeLeft, 1)} seconds.")
 
 
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)

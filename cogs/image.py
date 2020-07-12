@@ -10,9 +10,8 @@ class ImageModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     @commands.guild_only()
-    @commands.cooldown(2, 5, commands.BucketType.user)
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name='birb')
     async def birb(self, ctx):
 
@@ -31,19 +30,31 @@ class ImageModule(commands.Cog):
         await ctx.channel.send(embed=embed)
 
     @commands.guild_only()
-    @commands.cooldown(2, 5, commands.BucketType.user)
+    #@commands.cooldown(2, 5, commands.BucketType.user)
     @commands.command(name='bird')
     async def bird(self, ctx):
 
         randomFile=random.choice(os.listdir("Bird/"))
 
-        fp = open("Bird/"+randomFile, "rb")
-        f = discord.File(fp, filename=randomFile)
+        f = discord.File(f"Bird/{randomFile}", filename=randomFile)
 
-        e = discord.Embed(title="Bird")
-        e.set_image(url="attachment://" + randomFile)
+        e = discord.Embed(title="Bird", colour=0x64C6E9)
+        e.set_image(url=f"attachment://{randomFile}")
+        await ctx.channel.send(embed=e, file=f)
 
-        await ctx.channel.send(file=f, embed=e)
+    @commands.guild_only()
+    @commands.is_owner()
+    #@commands.cooldown(2, 5, commands.BucketType.user)
+    @commands.command(name='test')
+    async def test(self, ctx):
+
+        randomFile = "bird15@.png"
+
+        f = discord.File(f"Bird/{randomFile}", filename="bird.jpg")
+
+        e = discord.Embed(title="Test")
+        e.set_image(url=f"attachment://bird.jpg")
+        await ctx.channel.send(embed=e, file=f)
 
 def setup(bot):
     bot.add_cog(ImageModule(bot))
