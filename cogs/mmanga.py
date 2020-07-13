@@ -1,7 +1,5 @@
-import discord, sqlite3
+import discord, random, httpx
 from discord.ext import commands
-import random
-import requests
 from lxml import html
 
 class MmangaModule(commands.Cog):
@@ -13,7 +11,7 @@ class MmangaModule(commands.Cog):
         mname = mname.replace(" ", "-")
 
         post = "https://mavimanga.com/manga/" + mname
-        source = requests.get(post)
+        source = httpx.get(post)
 
         page = html.fromstring(source.content)
 
