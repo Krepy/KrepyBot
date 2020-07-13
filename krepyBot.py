@@ -1,16 +1,16 @@
-import discord
-from discord.ext import commands
+import discord, sys, traceback, asyncpg, json
+from discord.ext import commands, tasks
 from discord import permissions
-import json
-import sys, traceback
+from itertools import cycle
 
 with open("config.json", "r") as f:
     config = json.load(f)
 
-
 async def _prefix(bot, message):
-    return config["prefix"]
+    return config['prefix']
 
+async def create_db_pool():
+    bot.pg_con = await asyncpg.create_pool(database=config['dbDatabase'], user=config['dbUsername'], password=config['dbPassword'])
 
 extensions = [
     "cogs.image",
@@ -24,7 +24,7 @@ extensions = [
     "cogs.owner",
     "cogs.simple",
 ]
-TOKEN = config["token"]
+TOKEN = config['token']
 
 
 bot = commands.Bot(
@@ -34,7 +34,7 @@ bot = commands.Bot(
 )
 bot.remove_command("help")
 
-if __name__ == "__main__":
+def loadCogs():
     for cog in extensions:
         try:
             bot.load_extension(cog)
@@ -54,6 +54,7 @@ async def on_ready():
         status=discord.Status.dnd,
         activity=discord.Game(name="with potatoes!!"),
     )
+    loadCogs()
 
-
+bot.loop.run_until_complete(create_db_pool())
 bot.run(TOKEN, bot=True, reconnect=True)

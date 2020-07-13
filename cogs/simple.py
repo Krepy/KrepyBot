@@ -10,6 +10,7 @@ class SimpleModule(commands.Cog):
     async def ping(self, ctx):
         ping_ = self.bot.latency
         ping = round(ping_ * 1000)
+        print(f'{ping}')
         await ctx.channel.send(f"My ping is {ping} ms.")
 
     @commands.command(name="repeat", aliases=["afterme"])

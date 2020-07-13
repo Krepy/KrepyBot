@@ -7,19 +7,21 @@ class OwnerModule(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='setPrefix')
+
     @commands.is_owner()
+    @commands.command(name='setPrefix')
     async def setPrefix(self, ctx, newPref):
         with open('config.json', 'r') as f:
-            configs = json.load(f)
-        configs['prefix'] = newPref
+            config = json.load(f)
+        config['prefix'] = newPref
         with open('config.json', 'w') as f:
-            json.dump(configs, f)
+            json.dump(config, f)
         await ctx.channel.send("Prefix set.")
         self.bot.command_prefix = newPref
 
-    @commands.command(name='load', hidden=True)
+
     @commands.is_owner()
+    @commands.command(name='load', hidden=True)
     async def load(self, ctx, *, cog: str):
 
         try:
@@ -29,8 +31,9 @@ class OwnerModule(commands.Cog):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command(name='unload', hidden=True)
+
     @commands.is_owner()
+    @commands.command(name='unload', hidden=True)
     async def unload(self, ctx, *, cog: str):
 
         try:
@@ -40,8 +43,9 @@ class OwnerModule(commands.Cog):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command(name='reload', hidden=True)
+
     @commands.is_owner()
+    @commands.command(name='reload', hidden=True)
     async def reload(self, ctx, *, cog: str):
 
         try:

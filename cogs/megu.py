@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import random
-import requests
 from lxml import html
 
 
@@ -15,13 +14,13 @@ class MeguModule(commands.Cog):
     @commands.command(name='megu', aliases=['megumin', 'meguş'])
     async def megu(self, ctx):
         #siteList = ["https://safebooru.org/index.php?page=dapi&s=post&q=index&tags=megumin", "https://gelbooru.com/index.php?page=dapi&s=post&q=index&tags=megumin+rating%3Asafe"]
-        checkSource = requests.get("https://safebooru.org/index.php?page=dapi&s=post&q=index&tags=megumin")
+        checkSource = httpx.get("https://safebooru.org/index.php?page=dapi&s=post&q=index&tags=megumin")
         checkPage = html.fromstring(checkSource.content)
         totalPost = int(random.choice(checkPage.xpath('//posts/@count')))
         totalPage = int(totalPost / 100)
 
         randomPage = str(random.randint(0, totalPage))
-        source = requests.get("https://safebooru.org/index.php?page=dapi&s=post&q=index&tags=megumin&pid=" + randomPage)
+        source = httpx.get("https://safebooru.org/index.php?page=dapi&s=post&q=index&tags=megumin&pid=" + randomPage)
         page = html.fromstring(source.content)
         title = page.xpath('//post/@file_url')
 
