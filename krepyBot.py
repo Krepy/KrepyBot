@@ -10,7 +10,7 @@ async def _prefix(bot, message):
     return config['prefix']
 
 async def create_db_pool():
-    bot.pg_con = await asyncpg.create_pool(database=config['dbDatabase'], user=config['dbUsername'], password=config['dbPassword'])
+    bot.pg_con = await asyncpg.create_pool(database=config['dbDatabase'], user=config['dbUsername'], password=config['dbPassword'], host=config['dbHost'])
 
 extensions = [
     "cogs.image",
@@ -23,6 +23,7 @@ extensions = [
     "cogs.mmanga",
     "cogs.owner",
     "cogs.simple",
+    "cogs.feed",
 ]
 TOKEN = config['token']
 

@@ -6,3 +6,6 @@ dnspython
 asyncpg
 httpx
 pytz
+feedparser
+ast
+datetime

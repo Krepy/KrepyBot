@@ -7,6 +7,7 @@ class MembersModule(commands.Cog):
 
     #!user <@member>
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name = "user")
     async def user(self, ctx, member:discord.Member = None):
         if member == None:
@@ -31,7 +32,7 @@ class MembersModule(commands.Cog):
         if role is ctx.guild.default_role:
             role = "None"
 
-        avatarURL = member.avatar_url
+        avatarURL = str(member.avatar_url)
         avatarURL = avatarURL[:-15]
         avatarURL = avatarURL + ".jpg"
 
@@ -47,6 +48,7 @@ class MembersModule(commands.Cog):
         await ctx.channel.send(embed = embed)
 
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name = "joined")
     async def joined(self, ctx, member:discord.Member = None):
         if member == None:
@@ -57,7 +59,7 @@ class MembersModule(commands.Cog):
         joined = joined.date()
         await ctx.channel.send(f"{name} joined this guild at {joined}.")
 
-
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name = "created")
     async def created(self, ctx, member:discord.Member = None):
         if member == None:
@@ -68,6 +70,7 @@ class MembersModule(commands.Cog):
         created = created.date()
         await ctx.channel.send(f"{name} created at {created}.")
 
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name = "avatar")
     async def avatar(self, ctx, member:discord.Member = None):
         if member == None:
@@ -84,6 +87,7 @@ class MembersModule(commands.Cog):
         await ctx.channel.send(embed=embed)
 
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name="rank")
     async def rank(self, ctx, member:discord.Member = None):
         if member == None:
@@ -96,6 +100,7 @@ class MembersModule(commands.Cog):
         await ctx.channel.send(f"Rank of {name} is {role}.")
 
     @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(name="permissions")
     async def perm(self, ctx, member:discord.Member = None):
         if ctx.message.author.guild_permissions.administrator:
