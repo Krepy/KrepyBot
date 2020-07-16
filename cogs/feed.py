@@ -11,20 +11,13 @@ class FeedModule(commands.Cog):
         await self.mmfeed()
 
     async def mmfeed(self):
-        f = open("Dict/mFeedChannels.txt", "r")
-        feedChannels = ast.literal_eval(f.read())
-        f.close()
-
-        if not feedChannels:
-            return
-
-        f = open("Dict/mFeed.txt", "r")
-        feedDict = ast.literal_eval(f.read())
-        f.close()
-
         f = open("Dict/latestUpdate.txt", "r")
         latestUpdate = f.read()
         f.close()
+
+        feedChannels = await self.bot.pg_con.fetch(f'SELECT "channelID" FROM "feed"')
+        if not feedChannels:
+            return
 
         if not latestUpdate:
             latestUpdate = datetime.datetime.now() + datetime.timedelta(days=-1, hours=-5)
@@ -34,8 +27,6 @@ class FeedModule(commands.Cog):
 
         nFeed = feedparser.parse("https://www.mavimanga.com/r/feed")
         i = 0
-
-
 
         list = []
         while True:
@@ -62,17 +53,10 @@ class FeedModule(commands.Cog):
 
                 mangaInfoURL = f'https://mavimanga.com/manga/{mangaURL}/'
 
-                try:
-                    roleID = feedDict[f'{mangaURL}']
-                except:
-                    roleID = None
 
                 manga = await self.bot.pg_con.fetchrow(f'SELECT * FROM manga WHERE url=$1', mangaInfoURL)
 
                 sendString = ""
-                if roleID:
-                    sendString += f"<@&{roleID}>\n"
-
                 sendString += f"{manga['name']} "
 
                 y = i+1
@@ -94,8 +78,15 @@ class FeedModule(commands.Cog):
 
                 sendString += f" eklenmiştir, iyi okumalar. <:yey:733098265784090767> \n{mangaInfoURL}"
 
-                for i in feedChannels:
-                    channel = self.bot.get_channel(i)
+                for channelR in feedChannels:
+                    channelID = channelR['channelID']
+                    roleID = await self.bot.pg_con.fetchrow(f'SELECT "RoleID" FROM "mmRoles" WHERE "channelID"=$1 AND "mangaURL"=$2', str(channelID), mangaURL)
+                    if roleID:
+                        print(str(roleID))
+                        print(type(roleID))
+                        sendString = f"<@&{roleID['RoleID']}>\n" + sendString
+
+                    channel = self.bot.get_channel(int(channelID))
                     await channel.send(sendString)
 
                 i += 1
@@ -106,40 +97,30 @@ class FeedModule(commands.Cog):
         f.write(str(dateOfEntry))
         f.close()
 
+
     @commands.is_owner()
     @commands.guild_only()
     @commands.command(name='setMMFeed', aliases=['setMM'])
     async def setMMFeed(self, ctx):
-        f = open("Dict/mFeedChannels.txt", "r")
-        feedChannels = ast.literal_eval(f.read())
-        f.close()
-
-        feedChannels.append(ctx.channel.id)
-
-        f = open("Dict/mFeedChannels.txt", "w")
-        f.write(str(feedChannels))
-        f.close()
-
-        await ctx.channel.send("Feed set.")
+        channelID = str(ctx.channel.id)
+        feedChannel = await self.bot.pg_con.fetchrow(f'SELECT * FROM feed WHERE "channelID"=$1', channelID)
+        if feedChannel:
+            await ctx.channel.send("Feed already set in this channel.")
+        else:
+            await self.bot.pg_con.execute(f'INSERT INTO feed ("channelID") VALUES ($1)', channelID)
+            await ctx.channel.send("Feed set.")
 
     @commands.is_owner()
     @commands.guild_only()
     @commands.command(name='delMMFeed', aliases=['delMM'])
     async def delMMFeed(self, ctx):
-        f = open("Dict/mFeedChannels.txt", "r")
-        feedChannels = ast.literal_eval(f.read())
-        f.close()
-
-        try:
-            feedChannels.remove(Integer.valueOf(ctx.channel.id))
-        except:
-            await ctx.channel.send("This channel is not in the feed channels list.")
-
-        f = open("Dict/mFeedChannels.txt", "w")
-        f.write(str(feedChannels))
-        f.close()
-
-        await ctx.channel.send("Feed set.")
+        channelID = str(ctx.channel.id)
+        await self.bot.pg_con.fetch(f'SELECT * FROM feed WHERE "channelID"=$1', channelID)
+        if feedChannel:
+            await self.bot.pg_con.execute(f'DELETE FROM feed WHERE "channelID"=$1', channelID)
+            await ctx.channel.send("Channel deleted from feed list.")
+        else:
+            await ctx.channel.send("This channel is not in feed list.")
 
     @commands.is_owner()
     @commands.guild_only()
@@ -148,21 +129,23 @@ class FeedModule(commands.Cog):
         if role:
             if mangaURL:
                 try:
-                    mangaURL = (mangaURL.split('/manga/'))[1]
+                    mangaURL = ((mangaURL.split('/manga/'))[1].split('/'))[0]
                 except:
                     pass
 
-                f = open("Dict/mFeed.txt", "r")
-                dict = ast.literal_eval(f.read())
-                f.close()
+                roleID = str(role.id)
+                channelID = str(ctx.channel.id)
 
-                dict[f'{mangaURL}'] = f'{role.id}'
-
-                f = open("Dict/mFeed.txt", "w")
-                f.write(str(dict))
-                f.close()
-
-                await ctx.channel.send("Entry added to the dictionary.")
+                check = await self.bot.pg_con.fetch(f'SELECT "RoleID" FROM "mmRoles" WHERE "channelID"=$1 AND "mangaURL"=$2', channelID, mangaURL)
+                if check:
+                    if check == roleID:
+                        await ctx.channel.send("Entry is already in the dict.")
+                    else:
+                        await self.bot.pg_con.execute(f'UPDATE "mmRoles" SET "RoleID"=$1 WHERE "channelID"=$2 AND "mangaURL"=$3', roleID, channelID, mangaURL)
+                        await ctx.channel.send("Entry updated.")
+                else:
+                    await self.bot.pg_con.execute(f'INSERT INTO "mmRoles" ("channelID", "mangaURL", "RoleID") VALUES ($1, $2, $3)', channelID, mangaURL, roleID)
+                    await ctx.channel.send("Entry added to the dictionary.")
 
             else:
                 await ctx.channel.send("You did not specify a manga's url.")
@@ -179,20 +162,15 @@ class FeedModule(commands.Cog):
             except:
                 pass
 
-            f = open("Dict/mFeed.txt", "r")
-            dict = ast.literal_eval(f.read())
-            f.close()
+            roleID = str(role.id)
+            channelID = str(ctx.channel.id)
 
-            try:
-                del dict[f'{mangaURL}']
-            except:
-                await ctx.channel.send("Url is not part of the feed dict.")
-
-            f = open("Dict/mFeed.txt", "w")
-            f.write(str(dict))
-            f.close()
-
-            await ctx.channel.send("Entry deleted from the dictionary.")
+            check = await self.bot.pg_con.fetch(f'SELECT "RoleID" FROM "mmRoles" WHERE "channelID"=$1 AND "mangaURL"=$2', channelID, mangaURL)
+            if check:
+                await self.bot.pg_con.execute(f'DELETE FROM "mmRoles" WHERE "channelID"=$2 AND "mangaURL"=$3', channelID, mangaURL)
+                await ctx.channel.send("Entry deleted.")
+            else:
+                await ctx.channel.send("Entry is not in the dictionary.")
 
         else:
             await ctx.channel.send("You did not specify a manga's url.")
