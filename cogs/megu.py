@@ -1,7 +1,7 @@
-import discord
+import discord, random, httpx
 from discord.ext import commands
-import random
 from lxml import html
+
 
 
 class MeguModule(commands.Cog):

@@ -11,18 +11,16 @@ class FeedModule(commands.Cog):
         await self.mmfeed()
 
     async def mmfeed(self):
-        f = open("Dict/latestUpdate.txt", "r")
-        latestUpdate = f.read()
-        f.close()
+        latestU = await self.bot.pg_con.fetchrow(f'SELECT latest FROM "latestUpdate"')
+        print(latestU)
+        if not latestU['latest']:
+            latestUpdate = datetime.datetime.now() + datetime.timedelta(days=-1, hours=-5)
+        else:
+            latestUpdate = datetime.datetime.strptime(latestU['latest'], '%Y-%m-%d %H:%M:%S')
 
         feedChannels = await self.bot.pg_con.fetch(f'SELECT "channelID" FROM "feed"')
         if not feedChannels:
             return
-
-        if not latestUpdate:
-            latestUpdate = datetime.datetime.now() + datetime.timedelta(days=-1, hours=-5)
-        else:
-            latestUpdate = datetime.datetime.strptime(latestUpdate, '%Y-%m-%d %H:%M:%S')
 
 
         nFeed = feedparser.parse("https://www.mavimanga.com/r/feed")
@@ -53,11 +51,9 @@ class FeedModule(commands.Cog):
 
                 mangaInfoURL = f'https://mavimanga.com/manga/{mangaURL}/'
 
-
                 manga = await self.bot.pg_con.fetchrow(f'SELECT * FROM manga WHERE url=$1', mangaInfoURL)
 
-                sendString = ""
-                sendString += f"{manga['name']} "
+                sendString = f"{manga['name']} "
 
                 y = i+1
                 count = 0
@@ -93,9 +89,8 @@ class FeedModule(commands.Cog):
 
         dateOfEntry = datetime.datetime.strptime(nFeed.entries[0].updated, '%Y-%m-%dT%H:%M:%S+00:00') + datetime.timedelta(seconds=1)
 
-        f = open("Dict/latestUpdate.txt", "w")
-        f.write(str(dateOfEntry))
-        f.close()
+
+        await self.bot.pg_con.fetchrow(f'UPDATE "latestUpdate" SET latest=$1', str(dateOfEntry))
 
 
     @commands.is_owner()
@@ -115,7 +110,7 @@ class FeedModule(commands.Cog):
     @commands.command(name='delMMFeed', aliases=['delMM'])
     async def delMMFeed(self, ctx):
         channelID = str(ctx.channel.id)
-        await self.bot.pg_con.fetch(f'SELECT * FROM feed WHERE "channelID"=$1', channelID)
+        feedChannel = await self.bot.pg_con.fetch(f'SELECT * FROM feed WHERE "channelID"=$1', channelID)
         if feedChannel:
             await self.bot.pg_con.execute(f'DELETE FROM feed WHERE "channelID"=$1', channelID)
             await ctx.channel.send("Channel deleted from feed list.")
